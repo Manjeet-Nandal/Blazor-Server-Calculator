@@ -1,0 +1,162 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+<div class="calculator">
+
+    <input type="text" class="calculator-screen" @bind-value="@currentNumber" disabled />
+
+    <div class="calculator-keys">
+
+        <button type="button" class="operator" value="+" @onclick="@(e => getOperation("+"))">+</button>
+        <button type="button" class="operator" value="-" @onclick="@(e => getOperation("-"))">-</button>
+        <button type="button" class="operator" value="*" @onclick="@(e => getOperation("*"))">&times;</button>
+        <button type="button" class="operator" value="/" @onclick="@(e => getOperation(@"/"))">&divide;</button>
+
+        <button type="button" value="7" @onclick="@(e => getNumber("7"))">7</button>
+        <button type="button" value="8" @onclick="@(e => getNumber("8"))">8</button>
+        <button type="button" value="9" @onclick="@(e=> getNumber("9"))">9</button>
+
+
+        <button type="button" value="4" @onclick="@(e=> getNumber("4"))">4</button>
+        <button type="button" value="5" @onclick="@(e=> getNumber("5"))">5</button>
+        <button type="button" value="6" @onclick="@(e=> getNumber("6"))">6</button>
+
+
+        <button type="button" value="1" @onclick="@(e=> getNumber("1"))">1</button>
+        <button type="button" value="2" @onclick="@(e=> getNumber("2"))">2</button>
+        <button type="button" value="3" @onclick="@(e=> getNumber("3"))">3</button>
+
+
+        <button type="button" value="0" @onclick="@(e=> getNumber("0"))">0</button>
+        <button type="button" class="decimal" value="." @onclick="getDecimal">.</button>
+        <button type="button" class="all-clear" value="all-clear" @onclick="clear">AC</button>
+
+        <button type="button" class="equal-sign" value="=" @onclick="DoCalculation">=</button>
+
+    </div>
+
+</div>
+
+@code {
+    string currentNumber = "0";
+    double firstOperand = 0;
+    string lastOperator = "";
+    bool waitForSecondNumber;
+
+    public void getNumber(string v)
+    {
+        if (waitForSecondNumber)
+        {
+            this.currentNumber = v;
+            this.waitForSecondNumber = false;
+        }
+        else
+        {
+            if (currentNumber == "0")
+            {
+                currentNumber = v;
+            }
+            else
+            {
+                currentNumber += v;
+            }
+
+        }
+    }
+    void getDecimal()
+    {
+        if (!currentNumber.Contains('.'))
+        {
+            currentNumber += '.';
+        }
+    }
+    public void getOperation(string op)
+    {
+        if (op.Contains("+"))
+        {
+            firstOperand += Convert.ToDouble(currentNumber);
+            currentNumber = "";
+            lastOperator = "+";
+
+        }
+
+        if (op.Contains("-"))
+        {
+            if (firstOperand >= Convert.ToInt32(currentNumber))
+            {
+                firstOperand -= Convert.ToInt32(currentNumber);
+            }
+            else
+            {
+                firstOperand = Convert.ToInt32(currentNumber);
+            }
+            currentNumber = "";
+            lastOperator = "-";
+        }
+        if (op.Contains("*"))
+        {
+            if (firstOperand > 0)
+            {
+                firstOperand *= Convert.ToInt32(currentNumber);
+            }
+            else
+            {
+                firstOperand = Convert.ToInt32(currentNumber);
+
+            }
+            currentNumber = "";
+            lastOperator = "*";
+        }
+        if (op.Contains(@"/"))
+        {
+            if (firstOperand > 0)
+            {
+                firstOperand /= Convert.ToInt32(currentNumber);
+            }
+            else
+            {
+                firstOperand = Convert.ToInt32(currentNumber);
+
+            }
+            currentNumber = "";
+            lastOperator = @"/";
+        }
+
+
+    }
+    void DoCalculation()
+    {
+        if (firstOperand == 0)
+        {
+            return;
+        }
+        if (lastOperator.Contains("+"))
+        {
+            currentNumber = (firstOperand + Convert.ToDouble(currentNumber)).ToString();
+        }
+        else if (lastOperator.Contains("-"))
+        {
+            currentNumber = (firstOperand - Convert.ToDouble(currentNumber)).ToString();
+        }
+        else if (lastOperator.Contains("*"))
+        {
+            currentNumber = (firstOperand * Convert.ToDouble(currentNumber)).ToString();
+        }
+        else if (lastOperator.Contains(@"/"))
+        {
+            currentNumber = (firstOperand / Convert.ToDouble(currentNumber)).ToString();
+        }
+
+        firstOperand = 0;
+    }
+
+    void clear()
+    {
+        currentNumber = "0";
+        firstOperand = 0;
+        waitForSecondNumber = false;
+        lastOperator = "";
+    }
+
+}
